@@ -53,10 +53,25 @@ class NutrientController extends Controller
         $food_group_id = $this->food_groups[$currentRouteName];
 
         $data = DB::table("foods")->select(
-            "name_english as food", "protein", "fiber", "fat", "saturated_fat", "carbs", "sugar"
+            "id", "name_english as food", "protein", "fiber", "fat", "saturated_fat", "carbs", "sugar", "ash"
         )->whereIn("food_group", $food_group_id)->get();
 
-
         return view('nutrients', compact('data'));
+    }
+
+    public function foods($id)
+    {
+        assert(intval($id) >= 1);
+
+        $data = DB::select("
+         select foods.name_english as food, quantity, component_english as nutrient, unit, nutrient_groups.name_english as nutrient_group
+         from foods
+         inner join food_nutrient on food_nutrient.food_id=foods.id AND quantity > 0
+         inner join nutrients on food_nutrient.nutrient_id = nutrients.id
+         inner join nutrient_groups on nutrients.nutrient_group_id = nutrient_groups.id
+         where foods.id = $id
+         order by nutrient_group, quantity DESC");
+
+        return view('food', compact('data'));
     }
 }

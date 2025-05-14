@@ -72,6 +72,7 @@ class DatabaseSeeder extends Seeder
 
     public function createFoods($nutrientIdsByCode): void
     {
+        dump($nutrientIdsByCode);
         $timestamp = Carbon::now();
         $handle = fopen(__DIR__ . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "foods.csv", "r");
         try {
@@ -138,15 +139,19 @@ class DatabaseSeeder extends Seeder
                 $quantity = $row[12];
                 $nutrient_id = $nutrientIdsByCode[$component];
 
-                $nutrientQuantitiesByCode[$component] = $quantity;
+                if(!array_key_exists($component, $nutrientQuantitiesByCode)) {
+                    $nutrientQuantitiesByCode[$component] = $quantity;
 
-                $foodNutrientRelations[] = [
-                    'nutrient_id' => $nutrient_id,
-                    'food_id' => $food_id,
-                    'quantity' => intval($quantity),
-                    'created_at' => $timestamp,
-                    'updated_at' => $timestamp,
-                ];
+                    $foodNutrientRelations[] = [
+                        'nutrient_id' => $nutrient_id,
+                        'food_id' => $food_id,
+                        'quantity' => $quantity,
+                        'created_at' => $timestamp,
+                        'updated_at' => $timestamp,
+                    ];
+                } else {
+                    assert($nutrientQuantitiesByCode[$component] == $quantity);
+                }
                 $previousRow = $row;
             }
         } finally {
@@ -163,6 +168,7 @@ class DatabaseSeeder extends Seeder
         FoodGroup::query()->truncate();
         Food::query()->truncate();
         Nutrient::query()->truncate();
+        FoodNutrient::query()->truncate();
         NutrientGroup::query()->truncate();
 
         $nutrients = $this->createNutrients();

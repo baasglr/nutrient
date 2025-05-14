@@ -57,7 +57,8 @@ return new class extends Migration
         Schema::create('food_nutrient', function (Blueprint $table) {
             $table->foreignId('nutrient_id');
             $table->foreignId('food_id');
-            $table->integer('quantity');
+            $table->unique(['nutrient_id', 'food_id']);
+            $table->double('quantity');
             $table->timestamp('updated_at');
             $table->timestamp('created_at');
         });
@@ -68,6 +69,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('food_groups');
         Schema::dropIfExists('foods');
         Schema::dropIfExists('nutrient_groups');
         Schema::dropIfExists('nutrients');
