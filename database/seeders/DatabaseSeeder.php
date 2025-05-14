@@ -93,8 +93,6 @@ class DatabaseSeeder extends Seeder
                         'name_english' => $foodGroupEnglish,
                     ])->id;
                     $existingFoodGroups[$foodGroupDutch] = $foodGroupId;
-                } else {
-                    $foodGroupId = $existingFoodGroups[$foodGroupDutch];
                 }
 
                 $food_id = $row[3];
@@ -105,6 +103,8 @@ class DatabaseSeeder extends Seeder
 
                 if ($food_id > $food_id_counter) {
                     $name_dutch = trim($previousRow[4]);
+
+                    $foodGroupId = $existingFoodGroups[trim($previousRow[1])];
 
                     Food::insert([
                         'id' => $food_id - 1,
