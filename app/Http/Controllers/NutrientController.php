@@ -52,26 +52,46 @@ class NutrientController extends Controller
         $currentRouteName = Route::currentRouteName();
         $food_group_id = $this->food_groups[$currentRouteName];
 
-        $data = DB::table("foods")->select(
-            "id", "name_english as food", "protein", "fiber", "fat", "saturated_fat", "carbs", "sugar", "ash"
+        $foods = DB::table("foods")->select(
+            "id", "name_english as name", "protein", "fiber", "fat", "saturated_fat", "carbs", "sugar", "ash"
         )->whereIn("food_group", $food_group_id)->get();
 
-        return view('nutrients', compact('data'));
+        return view('foods', compact('foods'));
     }
 
     public function foods($id)
     {
         assert(intval($id) >= 1);
 
-        $data = DB::select("
-         select foods.name_english as food, quantity, component_english as nutrient, unit, nutrient_groups.name_english as nutrient_group
+        $foodName = $this->selectFoodName($id);
+        $nutritionFacts = $this->getNutritionFacts($id);
+
+        return view('food', compact('foodName', 'nutritionFacts'));
+    }
+
+    public function foodAsJson($id)
+    {
+        assert(intval($id) >= 1);
+
+        $nutritionFacts = $this->getNutritionFacts($id);
+
+        return response()->json($nutritionFacts, 200);
+    }
+
+    public function getNutritionFacts($id): array
+    {
+        return DB::select("
+         select quantity, component_english as nutrient, unit, nutrient_groups.name_english as nutrient_group
          from foods
          inner join food_nutrient on food_nutrient.food_id=foods.id AND quantity > 0
          inner join nutrients on food_nutrient.nutrient_id = nutrients.id
          inner join nutrient_groups on nutrients.nutrient_group_id = nutrient_groups.id
          where foods.id = $id
          order by nutrient_group, quantity DESC");
+    }
 
-        return view('food', compact('data'));
+    public function selectFoodName($id): string
+    {
+        return DB::selectOne("select name_english from foods where id = ?", [$id])->name_english;
     }
 }

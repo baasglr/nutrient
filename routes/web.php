@@ -9,6 +9,7 @@ Route::get('/about', function() {
 
 Route::get('/', [NutrientController::class, "index"])->name("home");
 Route::get('/foods/{id}', [NutrientController::class, "foods"])->name("food_by_id");
+Route::get('/json/foods/{id}', [NutrientController::class, "foodAsJson"])->name("json_food_by_id");
 Route::get('/vegetables', [NutrientController::class, "index"])->name("vegetables");
 Route::get('/potatoes_and_tubers', [NutrientController::class, "index"])->name("potatoes_and_tubers");
 Route::get('/fruits', [NutrientController::class, "index"])->name("fruits");

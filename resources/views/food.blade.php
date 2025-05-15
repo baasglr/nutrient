@@ -1,17 +1,12 @@
 @extends('layouts.app')
 @section('title', 'About')
 
-<script>
-    const app = {{ Js::from($data) }};
-    console.log(app);
-</script>
-
-
 @section('content')
 <div class="flex justify-center my-4">
     <input type="text" id="search" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search...">
 </div>
 
+<h1>{{$foodName}}</h1>
 <table id="food" class="min-w-full divide-y divide-gray-200">
     <thead class="bg-gray-50">
     <tr>
@@ -21,7 +16,7 @@
     </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
-    @foreach($data as $record)
+    @foreach($nutritionFacts as $record)
         <tr>
             <td class="px-6 py-4 whitespace-nowrap">{{$record->nutrient_group}}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{$record->nutrient}}</td>
